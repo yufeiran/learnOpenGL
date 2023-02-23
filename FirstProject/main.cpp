@@ -15,6 +15,16 @@ const char* vertexShaderSource = "#version 330 core\n"
 "  gl_Position=vec4(aPos.x,aPos.y,aPos.z,1.0);\n"
 "}\0";
 
+const char* vertexShaderSource1 = "#version 330 core\n"
+"layout (location = 0) in vec3 aPos;\n"
+"out vec4 vertexColor;\n"
+"void main()\n"
+"{\n"
+"  gl_Position = vec4(aPos,1.0);\n"
+"  vertexColor = vec4(0.5, 0.0 , 0.0, 1.0);\n"
+"}\0";
+
+
 const char* fragmentShaderSource = "#version 330 core\n"
 "out vec4 FragColor;\n"
 "void main()\n"
@@ -24,10 +34,19 @@ const char* fragmentShaderSource = "#version 330 core\n"
 
 
 const char* fragmentShaderSource1 = "#version 330 core\n"
-"out vec4 FragColor;\n"
+"out vec4 FragColor1;\n"
 "void main()\n"
 "{\n"
-"  FragColor=vec4(0.4f,0.19f,0.48f,1.0f);\n"
+"  FragColor1=vec4(0.4f,0.19f,0.48f,1.0f);\n"
+"}\0";
+
+
+const char* fragmentShaderSource2 = "#version 330 core\n"
+"out vec4 FragColor;\n"
+"in vec4 vertexColor;\n"
+"void main()\n"
+"{\n"
+"  FragColor = vertexColor;"
 "}\0";
 
 
@@ -116,12 +135,25 @@ int main()
 	int success;
 	char infoLog[512];
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-
 	if (!success)
 	{
 		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
+
+
+	unsigned int vertexShader1;
+	vertexShader1 = glCreateShader(GL_VERTEX_SHADER);
+
+	glShaderSource(vertexShader1, 1, &vertexShaderSource1, NULL);
+	glCompileShader(vertexShader1);
+	glGetShaderiv(vertexShader1, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(vertexShader1, 512, NULL, infoLog);
+		std::cout<< "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+
 
 	unsigned int fragmentShader;
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -149,6 +181,20 @@ int main()
 		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
 
+	unsigned int fragmentShader2;
+	fragmentShader2 = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader2, 1, &fragmentShaderSource2, NULL);
+	glCompileShader(fragmentShader2);
+
+	glGetShaderiv(fragmentShader2, GL_COMPILE_STATUS, &success);
+
+	if (!success)
+	{
+		glGetShaderInfoLog(fragmentShader2, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+
+
 	unsigned int shaderProgram;
 	shaderProgram = glCreateProgram();
 
@@ -175,11 +221,25 @@ int main()
 		std::cout << "ERROR::SHADER::VERTEX::LINK_FAILED\n" << infoLog << std::endl;
 	}
 
+	unsigned int shaderProgram2;
+	shaderProgram2 = glCreateProgram();
+
+	glAttachShader(shaderProgram2, vertexShader1);
+	glAttachShader(shaderProgram2, fragmentShader2);
+	glLinkProgram(shaderProgram2);
+
+	glGetProgramiv(shaderProgram2, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(shaderProgram1, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::VERTEX::LINK_FAILED\n" << infoLog << std::endl;
+	}
+
 
 	glDeleteShader(vertexShader);
+	glDeleteShader(vertexShader1);
 	glDeleteShader(fragmentShader);
 	glDeleteShader(fragmentShader1);
-
+	glDeleteShader(fragmentShader2);
 	//--------------------make mesh------------------
 
 	unsigned int VAO;
@@ -252,6 +312,8 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glUseProgram(shaderProgram);
+
+
 		glBindVertexArray(VAO1);
 		//glDrawArrays(GL_TRIANGLES, 0, 3);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -264,6 +326,10 @@ int main()
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glBindVertexArray(0);
 
+		glUseProgram(shaderProgram2);
+		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
 
 
 		glfwSwapBuffers(window);
