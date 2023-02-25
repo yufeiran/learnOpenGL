@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{3829fa54-b621-4824-93d1-8e40d1fb9441}</ProjectGuid>
-    <RootNamespace>My13Textures</RootNamespace>
+    <ProjectGuid>{a1189b3c-e209-417b-bf1c-184c67ba7c74}</ProjectGuid>
+    <RootNamespace>My14Transformation</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -137,6 +137,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\unitlty\shader.h" />
+    <ClInclude Include="..\unitlty\std_image.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
