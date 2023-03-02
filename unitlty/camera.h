@@ -89,8 +89,8 @@ public:
 		{
 			if (Pitch > 89.0f)
 				Pitch = 89.9f;
-			if (Pitch < 1.0f)
-				Pitch = 1.0f;
+			if (Pitch < -89.0f)
+				Pitch = 89.0f;
 		}
 		updateCameraVectors();
 	}
