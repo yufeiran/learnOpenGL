@@ -29,6 +29,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2_4_LightingMap", "2_4_Ligh
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2_5_LightCasters", "2_5_LightCasters\2_5_LightCasters.vcxproj", "{C38191F6-C311-48E5-9B69-EF3C35950AF4}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2_6_MultipleLights", "2_6_MultipleLights\2_6_MultipleLights.vcxproj", "{517C7346-19D3-4F71-B59E-CCE0B6897492}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -125,6 +127,14 @@ Global
 		{C38191F6-C311-48E5-9B69-EF3C35950AF4}.Release|x64.Build.0 = Release|x64
 		{C38191F6-C311-48E5-9B69-EF3C35950AF4}.Release|x86.ActiveCfg = Release|Win32
 		{C38191F6-C311-48E5-9B69-EF3C35950AF4}.Release|x86.Build.0 = Release|Win32
+		{517C7346-19D3-4F71-B59E-CCE0B6897492}.Debug|x64.ActiveCfg = Debug|x64
+		{517C7346-19D3-4F71-B59E-CCE0B6897492}.Debug|x64.Build.0 = Debug|x64
+		{517C7346-19D3-4F71-B59E-CCE0B6897492}.Debug|x86.ActiveCfg = Debug|Win32
+		{517C7346-19D3-4F71-B59E-CCE0B6897492}.Debug|x86.Build.0 = Debug|Win32
+		{517C7346-19D3-4F71-B59E-CCE0B6897492}.Release|x64.ActiveCfg = Release|x64
+		{517C7346-19D3-4F71-B59E-CCE0B6897492}.Release|x64.Build.0 = Release|x64
+		{517C7346-19D3-4F71-B59E-CCE0B6897492}.Release|x86.ActiveCfg = Release|Win32
+		{517C7346-19D3-4F71-B59E-CCE0B6897492}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -141,6 +151,7 @@ Global
 		{5E935747-4543-4517-BCE4-C43D1B8064CD} = {F24A2188-FF99-450A-BDFD-C8D2C0571F1D}
 		{3A59D7C5-736E-4267-9971-CCD6C5393F40} = {F24A2188-FF99-450A-BDFD-C8D2C0571F1D}
 		{C38191F6-C311-48E5-9B69-EF3C35950AF4} = {F24A2188-FF99-450A-BDFD-C8D2C0571F1D}
+		{517C7346-19D3-4F71-B59E-CCE0B6897492} = {F24A2188-FF99-450A-BDFD-C8D2C0571F1D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C92C70E6-92A8-4800-963F-0F71BA4FE778}
