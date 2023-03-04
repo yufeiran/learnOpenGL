@@ -113,8 +113,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 glm::vec3 dirLightSpecularColor = glm::vec3(1.0f);
 
 const int PointLightSum = 4;
-glm::vec3 pointLightSpecularColor[PointLightSum] = { 
-    glm::vec3(134,193,102)/ glm::vec3(255.0f),
+glm::vec3 pointLightSpecularColor[PointLightSum] = {
+    glm::vec3(134,193,102) / glm::vec3(255.0f),
     glm::vec3(123,144,210) / glm::vec3(255.0f),
     glm::vec3(15,76,58) / glm::vec3(255.0f),
     glm::vec3(114,72,50) / glm::vec3(255.0f)
@@ -290,7 +290,7 @@ int main()
         int display_w, display_h;
         glfwGetFramebufferSize(window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
-        glClearColor(clear_color.x, clear_color.y, clear_color.z,1.0);
+        glClearColor(clear_color.x, clear_color.y, clear_color.z, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
@@ -302,7 +302,7 @@ int main()
 
         glm::mat4 model = glm::mat4(1.0f);
 
- 
+
 
         //画被光照的模型
         lightingShader.use();
@@ -361,7 +361,7 @@ int main()
         lightingShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
         lightingShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(16.5f)));
         lightingShader.setVec3("spotLight.ambient", spotLightSpecularColor * glm::vec3(0.2f));
-        lightingShader.setVec3("spotLight.diffuse", spotLightSpecularColor*glm::vec3(0.5f));
+        lightingShader.setVec3("spotLight.diffuse", spotLightSpecularColor * glm::vec3(0.5f));
         lightingShader.setVec3("spotLight.specular", spotLightSpecularColor);
         lightingShader.setFloat("spotLight.constant", 1.0f);
         lightingShader.setFloat("spotLight.linear", 0.09f);
@@ -412,7 +412,7 @@ int main()
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
-    
+
     glfwDestroyWindow(window);
     glfwTerminate();
 
@@ -463,7 +463,7 @@ void processInput(GLFWwindow* window)
         glfwSetCursorPosCallback(window, mouse_callback);
         glfwSetScrollCallback(window, scroll_callback);
     }
-    
+
 
 }
 
