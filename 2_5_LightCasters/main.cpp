@@ -16,7 +16,8 @@
 #include"../unitlty/std_image.h"
 #include"../unitlty/camera.h"
 
-
+const int SCREEN_WIDTH = 1024;
+const int SCREEN_HEIGHT = 768;
 
 struct Material {
     glm::vec3 ambient;
@@ -73,6 +74,19 @@ float vertices[] = {
     -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
 };
 
+glm::vec3 cubePositions[] = {
+    glm::vec3(0.0f,  0.0f,  0.0f),
+    glm::vec3(2.0f,  5.0f, -15.0f),
+    glm::vec3(-1.5f, -2.2f, -2.5f),
+    glm::vec3(-3.8f, -2.0f, -12.3f),
+    glm::vec3(2.4f, -0.4f, -3.5f),
+    glm::vec3(-1.7f,  3.0f, -7.5f),
+    glm::vec3(1.3f, -2.0f, -2.5f),
+    glm::vec3(1.5f,  2.0f, -2.5f),
+    glm::vec3(1.5f,  0.2f, -1.5f),
+    glm::vec3(-1.3f,  1.0f, -1.5f)
+};
+
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -104,7 +118,7 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "LearnOpenGL", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -148,8 +162,8 @@ int main()
 
 
     //被光照的物体
-    Shader lightingShader("../shaders/2_4_LightingMaps_1.vs", "../shaders/2_4_LightingMaps_1.fs");
-    Shader lightCubeShader("../shaders/2_4_LightingMaps_2_light.vs", "../shaders/2_4_LightingMaps_2_light.fs");
+    Shader lightingShader("../shaders/2_5_LightCasters_4_spotlight.vs", "../shaders/2_5_LightCasters_4_spotlight.fs");
+    Shader lightCubeShader("../shaders/2_5_LightCasters_2_light.vs", "../shaders/2_5_LightCasters_2_light.fs");
 
     //构建方块的模型
     unsigned int VAO;
@@ -184,7 +198,7 @@ int main()
     unsigned int emissionMap;
     emissionMap = makeTexture("../textures/matrix.jpg");
 
-    
+
     lightingShader.use();
     lightingShader.setInt("material.diffuse", 0);
     lightingShader.setInt("material.specular", 1);
@@ -209,8 +223,9 @@ int main()
 
 
 
+
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8* sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     glEnable(GL_DEPTH_TEST);
@@ -231,7 +246,7 @@ int main()
 
         {
 
-            ImGui::Begin("Hello World!");
+            ImGui::Begin("Setting");
 
             ImGui::Text("Press [m] show mouse [h] hide mouse");
 
@@ -245,9 +260,7 @@ int main()
             ImGui::Checkbox("AutoChangeColor", &isAutoChangeColor);
             ImGui::SliderAngle("lightAngle", &lightAngle, 0.0f, 360.f);
 
-
             ImGui::ColorEdit3("clear color", (float*)&clear_color);
-
 
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
@@ -262,7 +275,7 @@ int main()
         int display_w, display_h;
         glfwGetFramebufferSize(window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
@@ -281,7 +294,7 @@ int main()
         lightColor.z = sin(glfwGetTime() * 1.3f);
         glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
         glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
-        if (isAutoChangeColor == true) {
+        if (isAutoChangeColor == false) {
             lightColor = glm::vec3(1.0f);
             diffuseColor = glm::vec3(1.0f);
             ambientColor = glm::vec3(1.0f);
@@ -294,16 +307,34 @@ int main()
         lightingShader.setMat4("view", view);
         lightingShader.setMat4("projection", projection);
         lightingShader.setVec3("viewPos", camera.Position);
-        lightingShader.setVec3("lightPos", lightPos);
         lightingShader.setFloat("time", glfwGetTime());
 
+        lightingShader.setVec3("light.position", camera.Position);
+        lightingShader.setVec3("light.direction", camera.Front);
+        lightingShader.setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
+        lightingShader.setFloat("light.outerCutOff", glm::cos(glm::radians(16.5f)));
         lightingShader.setVec3("light.ambient", ambientColor);
         lightingShader.setVec3("light.diffuse", diffuseColor);
         lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
 
-        glBindVertexArray(VAO);
 
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        lightingShader.setFloat("light.constant", 1.0f);
+        lightingShader.setFloat("light.linear", 0.09f);
+        lightingShader.setFloat("light.quadratic", 0.032f);
+
+        glBindVertexArray(VAO);
+        for (unsigned int i = 0; i < 10; i++)
+        {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, cubePositions[i]);
+            float angle = 20.0f * i;
+            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            lightingShader.setMat4("model", model);
+
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        }
+
 
 
         //发光cube旋转
@@ -330,8 +361,8 @@ int main()
 
 
 
-        glBindVertexArray(lightVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        //glBindVertexArray(lightVAO);
+        //glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -395,7 +426,7 @@ void processInput(GLFWwindow* window)
 
 }
 
-float lastX = 400, lastY = 300;
+float lastX = SCREEN_WIDTH/2, lastY = SCREEN_HEIGHT/2;
 bool firstMouse = true;
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
@@ -406,7 +437,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
         lastY = ypos;
         firstMouse = false;
     }
-
 
 
     float xoffset = xpos - lastX;
