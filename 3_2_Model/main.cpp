@@ -188,8 +188,8 @@ int main()
     Model backpackModel("C://Users/yufei/3dModel/backpack/backpack.obj");
 
     //被光照的物体
-    Shader lightingShader("../shaders/2_6_MultipleLight_1.vs", "../shaders/2_6_MultipleLight_1.fs");
-    Shader lightCubeShader("../shaders/2_6_MultipleLight_2_light.vs", "../shaders/2_6_MultipleLight_2_light.fs");
+    Shader lightingShader("../shaders/3_2_Model_1.vs", "../shaders/3_2_Model_1.fs");
+    Shader lightCubeShader("../shaders/3_2_Model_2_light.vs", "../shaders/3_2_Model_2_light.fs");
 
     //构建方块的模型
     unsigned int VAO;

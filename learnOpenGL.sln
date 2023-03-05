@@ -5,7 +5,7 @@ VisualStudioVersion = 17.3.32901.215
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "1_1_FirstProject", "FirstProject\FirstProject.vcxproj", "{942408DB-EE56-4CE5-9A90-8657CDE3BD35}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Getting-started", "Getting-started", "{A87E25C5-C856-43DA-8898-25820B80ABE8}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1_Getting-started", "1_Getting-started", "{A87E25C5-C856-43DA-8898-25820B80ABE8}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "1_2_Shaders", "1_2_Shaders\1_2_Shaders.vcxproj", "{E0416D07-A1CC-4AC2-8FFF-7BD3DAEE1B35}"
 EndProject
@@ -17,7 +17,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "1_5_CoordinateSystems", "1_
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "1_6_Camera", "1_6_Camera\1_6_Camera.vcxproj", "{E86678D2-739A-49F6-AAAB-B6A0E77339A8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lighting", "Lighting", "{F24A2188-FF99-450A-BDFD-C8D2C0571F1D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2_Lighting", "2_Lighting", "{F24A2188-FF99-450A-BDFD-C8D2C0571F1D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2_1_Colors", "2_1_Colors\2_1_Colors.vcxproj", "{66050CE1-7062-439F-BAE7-25A597D230F1}"
 EndProject
@@ -31,11 +31,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2_5_LightCasters", "2_5_Lig
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2_6_MultipleLights", "2_6_MultipleLights\2_6_MultipleLights.vcxproj", "{517C7346-19D3-4F71-B59E-CCE0B6897492}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Model-Loading", "Model-Loading", "{8A1D751A-E8D1-4023-B847-EC1CE4EE39FA}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3_Model-Loading", "3_Model-Loading", "{8A1D751A-E8D1-4023-B847-EC1CE4EE39FA}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3_1_Mesh", "3_1_Mesh\3_1_Mesh.vcxproj", "{CEF030BE-168F-4A5E-AEF2-4B1978AE609E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3_2_Model", "3_2_Model\3_2_Model.vcxproj", "{3E2D02F7-AA50-44F0-B792-8A484B8D273A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4_Advanced-OpenGL", "4_Advanced-OpenGL", "{5A626CDD-D4A4-4B1E-B1B6-73B048CFB31E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "4_1_DepthTesting", "4_1_DepthTesting\4_1_DepthTesting.vcxproj", "{DD95AD39-F451-4DD0-9968-E1C4694C2CF3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -157,6 +161,14 @@ Global
 		{3E2D02F7-AA50-44F0-B792-8A484B8D273A}.Release|x64.Build.0 = Release|x64
 		{3E2D02F7-AA50-44F0-B792-8A484B8D273A}.Release|x86.ActiveCfg = Release|Win32
 		{3E2D02F7-AA50-44F0-B792-8A484B8D273A}.Release|x86.Build.0 = Release|Win32
+		{DD95AD39-F451-4DD0-9968-E1C4694C2CF3}.Debug|x64.ActiveCfg = Debug|x64
+		{DD95AD39-F451-4DD0-9968-E1C4694C2CF3}.Debug|x64.Build.0 = Debug|x64
+		{DD95AD39-F451-4DD0-9968-E1C4694C2CF3}.Debug|x86.ActiveCfg = Debug|Win32
+		{DD95AD39-F451-4DD0-9968-E1C4694C2CF3}.Debug|x86.Build.0 = Debug|Win32
+		{DD95AD39-F451-4DD0-9968-E1C4694C2CF3}.Release|x64.ActiveCfg = Release|x64
+		{DD95AD39-F451-4DD0-9968-E1C4694C2CF3}.Release|x64.Build.0 = Release|x64
+		{DD95AD39-F451-4DD0-9968-E1C4694C2CF3}.Release|x86.ActiveCfg = Release|Win32
+		{DD95AD39-F451-4DD0-9968-E1C4694C2CF3}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -176,6 +188,7 @@ Global
 		{517C7346-19D3-4F71-B59E-CCE0B6897492} = {F24A2188-FF99-450A-BDFD-C8D2C0571F1D}
 		{CEF030BE-168F-4A5E-AEF2-4B1978AE609E} = {8A1D751A-E8D1-4023-B847-EC1CE4EE39FA}
 		{3E2D02F7-AA50-44F0-B792-8A484B8D273A} = {8A1D751A-E8D1-4023-B847-EC1CE4EE39FA}
+		{DD95AD39-F451-4DD0-9968-E1C4694C2CF3} = {5A626CDD-D4A4-4B1E-B1B6-73B048CFB31E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C92C70E6-92A8-4800-963F-0F71BA4FE778}
