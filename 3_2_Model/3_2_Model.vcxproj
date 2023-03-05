@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{cef030be-168f-4a5e-aef2-4b1978ae609e}</ProjectGuid>
-    <RootNamespace>My31Mesh</RootNamespace>
+    <ProjectGuid>{3e2d02f7-aa50-44f0-b792-8a484b8d273a}</ProjectGuid>
+    <RootNamespace>My32Model</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -154,6 +154,7 @@
     <ClInclude Include="..\unitlty\imgui\imstb_textedit.h" />
     <ClInclude Include="..\unitlty\imgui\imstb_truetype.h" />
     <ClInclude Include="..\unitlty\mesh.h" />
+    <ClInclude Include="..\unitlty\model.h" />
     <ClInclude Include="..\unitlty\shader.h" />
     <ClInclude Include="..\unitlty\std_image.h" />
   </ItemGroup>

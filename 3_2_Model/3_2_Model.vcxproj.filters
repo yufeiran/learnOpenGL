@@ -14,7 +14,7 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="imgui">
-      <UniqueIdentifier>{911722bc-4cdb-4657-961f-49d60c2fc4f2}</UniqueIdentifier>
+      <UniqueIdentifier>{762ecb62-115b-4927-828a-e9c5b4857cf1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -77,13 +77,16 @@
     <ClInclude Include="..\unitlty\camera.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\unitlty\mesh.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
     <ClInclude Include="..\unitlty\shader.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\unitlty\std_image.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\unitlty\mesh.h">
+    <ClInclude Include="..\unitlty\model.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
