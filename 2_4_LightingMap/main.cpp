@@ -219,6 +219,7 @@ int main()
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     bool isLightAutoSpin = true;
     bool isAutoChangeColor = false;
+
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
@@ -227,6 +228,8 @@ int main()
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+
+
 
 
         {
