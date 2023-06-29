@@ -198,6 +198,7 @@ unsigned int TextureFromFile(const char* filepath,const std::string &directory,b
 		std::cout << "Failed to load texture" << std::endl;
 		stbi_image_free(data);
 	}
+	stbi_set_flip_vertically_on_load(false);
 	
 	return texture;
 }
