@@ -31,15 +31,17 @@ public:
 
 	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int>indices, std::vector<Texture>textures);
 	void Draw(Shader& shader);
-private:
 	// render data
-	unsigned int VAO, VBO, EBO;
-
-	/*	
+	/*
 	*   VAO: Vertex Arrary Object
-	*	VBO: Vertex Buffer Objects 
+	*	VBO: Vertex Buffer Objects
 	*   EBO: Element Buffer Object
 	*/
+	unsigned int VAO, VBO, EBO;
+
+private:
+
+
 
 	void setupMesh();
 
