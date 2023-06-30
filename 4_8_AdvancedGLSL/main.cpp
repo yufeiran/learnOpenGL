@@ -117,6 +117,8 @@ int main()
     Shader reflectionShader("../shaders/4_6_reflection.vs", "../shaders/4_6_reflection.fs");
     Shader refractionShader("../shaders/4_6_refraction.vs", "../shaders/4_6_refraction.fs");
     Shader skyboxShader("../shaders/4_6_skybox.vs", "../shaders/4_6_skybox.fs");
+    Shader advanceShader("../shaders/4_8_Advance.vs", "../shaders/4_8_Advance.fs");
+    Shader geometryShader("../shaders/4_9_geometry.vs", "../shaders/4_9_geometry.fs", "../shaders/4_9_house.gs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -265,11 +267,25 @@ int main()
     };
 
     float points[] = {
-    -0.5f,  0.5f, // top-left
-     0.5f,  0.5f, // top-right
-     0.5f, -0.5f, // bottom-right
-    -0.5f, -0.5f  // bottom-left
+    -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, // top-left
+     0.5f,  0.5f, 0.0f, 1.0f, 0.0f, // top-right
+     0.5f, -0.5f, 0.0f, 0.0f, 1.0f, // bottom-right
+    -0.5f, -0.5f, 1.0f, 1.0f, 0.0f  // bottom-left
     };
+
+    // point VAO
+    unsigned int pointVAO, pointVBO;
+    glGenVertexArrays(1, &pointVAO);
+    glGenBuffers(1, &pointVBO);
+    glBindVertexArray(pointVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, pointVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2*sizeof(float)));
+
+    glBindVertexArray(0);
 
     // cube VAO
     unsigned int cubeVAO, cubeVBO;
@@ -327,7 +343,7 @@ int main()
     unsigned int floorTexture = loadTexture("../textures/metal.jpg");
 
     //¶ÁÈ¡Ä£ÐÍ
-    Model backpackModel("C://Users/yufei/3dModel/backpack/backpack.obj");
+    //Model backpackModel("C://Users/yufei/3dModel/backpack/backpack.obj");
 
     std::vector<std::string> faces
     {
@@ -340,13 +356,14 @@ int main()
     };
     unsigned int cubemapTexture = loadCubemap(faces);
 
-    
+
 
     // shader configuration
     // --------------------
     shader.use();
     shader.setInt("texture1", 0);
 
+    glEnable(GL_PROGRAM_POINT_SIZE);
 
     // render loop
     // -----------
@@ -367,21 +384,54 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        geometryShader.use();
+        glBindVertexArray(pointVAO);
+        glDrawArrays(GL_POINTS, 0, 4);
+
 
         glm::mat4 model = glm::mat4(1.0f);
         glm::mat4 view = camera.GetViewMatrix();;
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-       
+
+        //normal cube
+        //shader.use();
+        //shader.setMat4("view", view);
+        //shader.setMat4("projection", projection);
+
+        //model = glm::translate(model, glm::vec3(3.0f, 3.0f, -1.0f));
+        //shader.setMat4("model", model);
+        //glBindVertexArray(cubeVAO);
+        //glActiveTexture(GL_TEXTURE0);
+        //glBindTexture(GL_TEXTURE_2D, cubeTexture);
+        //glDrawArrays(GL_TRIANGLES, 0, 36);
+
         model = glm::mat4(1.0f);
-        // reflect cube
-        reflectionShader.use();
-        reflectionShader.setMat4("view", view);
-        reflectionShader.setMat4("projection", projection);
-        reflectionShader.setVec3("cameraPos", camera.Position);
+        //// reflect cube
+        //reflectionShader.use();
+        //reflectionShader.setMat4("view", view);
+        //reflectionShader.setMat4("projection", projection);
+        //reflectionShader.setVec3("cameraPos", camera.Position);
 
-        model = glm::translate(model, glm::vec3(-5.0f, 0.0f, 5.0f));
+        //model = glm::translate(model, glm::vec3(1.0f, 0.0f, -2.0f));
 
-        reflectionShader.setMat4("model", model);
+        //reflectionShader.setMat4("model", model);
+
+        //glBindVertexArray(cubeNoramlVAO);
+        //glActiveTexture(GL_TEXTURE0);
+        //glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+        //glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+        model = glm::mat4(1.0f);
+        // advance cube
+        advanceShader.use();
+        advanceShader.setMat4("view", view);
+        advanceShader.setMat4("projection", projection);
+        advanceShader.setVec3("cameraPos", camera.Position);
+
+        model = glm::translate(model, glm::vec3(-3.0f, 0.0f, -2.0f));
+
+        advanceShader.setMat4("model", model);
 
         glBindVertexArray(cubeNoramlVAO);
         glActiveTexture(GL_TEXTURE0);
@@ -389,37 +439,36 @@ int main()
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
+        //model = glm::mat4(1.0f);
+        //model = glm::translate(model, glm::vec3(-3.0f, 0.0f, -2.0f));
+        //reflectionShader.setMat4("model", model);
+        //backpackModel.Draw(reflectionShader);
 
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-3.0f, 0.0f, -2.0f));
-        reflectionShader.setMat4("model", model);
-        backpackModel.Draw(reflectionShader);
+        //refractionShader.use();
+        //refractionShader.setMat4("view", view);
+        //refractionShader.setMat4("projection", projection);
+        //refractionShader.setVec3("cameraPos", camera.Position);
+        //model = glm::mat4(1.0f);
+        //model = glm::translate(model, glm::vec3(3.0f, 0.0f, -2.0f));
 
-        refractionShader.use();
-        refractionShader.setMat4("view", view);
-        refractionShader.setMat4("projection", projection);
-        refractionShader.setVec3("cameraPos", camera.Position);
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(3.0f, 0.0f, -2.0f));
-
-        refractionShader.setMat4("model", model);
-        backpackModel.Draw(refractionShader);
-
+        //refractionShader.setMat4("model", model);
+        //backpackModel.Draw(refractionShader);
 
 
-        glDepthFunc(GL_LEQUAL);
-        view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
 
-        skyboxShader.use();
+        //glDepthFunc(GL_LEQUAL);
+        //view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
 
-        skyboxShader.setMat4("view", view);
-        skyboxShader.setMat4("projection", projection);
-        glBindVertexArray(skyboxVAO);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        glBindVertexArray(0);
-        glDepthFunc(GL_LESS);
+        //skyboxShader.use();
+
+        //skyboxShader.setMat4("view", view);
+        //skyboxShader.setMat4("projection", projection);
+        //glBindVertexArray(skyboxVAO);
+        //glActiveTexture(GL_TEXTURE0);
+        //glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+        //glDrawArrays(GL_TRIANGLES, 0, 36);
+        //glBindVertexArray(0);
+        //glDepthFunc(GL_LESS);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
