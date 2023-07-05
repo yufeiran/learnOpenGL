@@ -59,6 +59,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "4_9_GeometryShader", "4_9_G
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "4_10_Instancing", "4_10_Instancing\4_10_Instancing.vcxproj", "{9325015B-9070-460F-A276-A18EDEE1A777}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "4_11_AntiAliasing", "4_11_AntiAliasing\4_11_AntiAliasing.vcxproj", "{5DA7B545-328D-4675-B7FB-E00D428EA171}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -259,6 +261,14 @@ Global
 		{9325015B-9070-460F-A276-A18EDEE1A777}.Release|x64.Build.0 = Release|x64
 		{9325015B-9070-460F-A276-A18EDEE1A777}.Release|x86.ActiveCfg = Release|Win32
 		{9325015B-9070-460F-A276-A18EDEE1A777}.Release|x86.Build.0 = Release|Win32
+		{5DA7B545-328D-4675-B7FB-E00D428EA171}.Debug|x64.ActiveCfg = Debug|x64
+		{5DA7B545-328D-4675-B7FB-E00D428EA171}.Debug|x64.Build.0 = Debug|x64
+		{5DA7B545-328D-4675-B7FB-E00D428EA171}.Debug|x86.ActiveCfg = Debug|Win32
+		{5DA7B545-328D-4675-B7FB-E00D428EA171}.Debug|x86.Build.0 = Debug|Win32
+		{5DA7B545-328D-4675-B7FB-E00D428EA171}.Release|x64.ActiveCfg = Release|x64
+		{5DA7B545-328D-4675-B7FB-E00D428EA171}.Release|x64.Build.0 = Release|x64
+		{5DA7B545-328D-4675-B7FB-E00D428EA171}.Release|x86.ActiveCfg = Release|Win32
+		{5DA7B545-328D-4675-B7FB-E00D428EA171}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -288,6 +298,7 @@ Global
 		{0FF4EC00-1E2B-4CBB-AFC1-B792AB75578C} = {5A626CDD-D4A4-4B1E-B1B6-73B048CFB31E}
 		{0A949321-1870-4DDA-8F3C-CEFAB9032052} = {5A626CDD-D4A4-4B1E-B1B6-73B048CFB31E}
 		{9325015B-9070-460F-A276-A18EDEE1A777} = {5A626CDD-D4A4-4B1E-B1B6-73B048CFB31E}
+		{5DA7B545-328D-4675-B7FB-E00D428EA171} = {5A626CDD-D4A4-4B1E-B1B6-73B048CFB31E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C92C70E6-92A8-4800-963F-0F71BA4FE778}
