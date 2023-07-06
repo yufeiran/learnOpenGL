@@ -14,7 +14,7 @@ uniform vec3 viewPos;
 
 uniform bool blinn;
 
-
+uniform bool gammaCorrection;
 
 
 in vec3 result;
@@ -50,6 +50,14 @@ void main()
     }
 
     vec3 specular = vec3(0.3)*spec; // assuming bright white light color
+
+    // simple attenuation
+    float max_distance =1.5;
+    float distance = length(lightPos-fs_in.FragPos);
+    float attenuation = 1.0/(gammaCorrection ? distance*distance:distance);
+
+    diffuse*=attenuation;
+    specular*=attenuation;
 
     FragColor = vec4(ambient+diffuse+specular,1.0);
 

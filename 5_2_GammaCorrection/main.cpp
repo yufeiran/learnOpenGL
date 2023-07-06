@@ -27,7 +27,7 @@ void mouse_callback_null(GLFWwindow* window, double xposIn, double yposIn);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
-unsigned int loadTexture(const char* path);
+unsigned int loadTexture(const char* path,bool gammaCorrection=false);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -116,7 +116,9 @@ int main()
     Shader singleColorShader("../shaders/4_2_1.vs", "../shaders/4_2_2_shaderSingleColor.fs");
     Shader transparentShader("../shaders/4_3_1.vs", "../shaders/4_3_2_transparent.fs");
     Shader screenShader("../shaders/5_1_post.vs", "../shaders/5_1_post.fs");
-    Shader shader("../shaders/5_1_Blinn-Phong.vs", "../shaders/5_1_Blinn-Phong.fs");
+    Shader shader("../shaders/5_2_Blinn-PhongWithGamma.vs", "../shaders/5_2_Blinn-PhongWithGamma.fs");
+    Shader screenGammaCorrectionShader("../shaders/5_2_postGammaCorrection.vs", "../shaders/5_2_postGammaCorrection.fs");
+
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -238,7 +240,7 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0,3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(2);
@@ -269,7 +271,7 @@ int main()
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
-  
+
 
 
     vector<glm::vec3> vegetation;
@@ -285,6 +287,19 @@ int main()
     windows.push_back(glm::vec3(0.0f, 0.0f, 0.7f));
     windows.push_back(glm::vec3(-0.3f, 0.0f, -2.3f));
     windows.push_back(glm::vec3(0.5f, 0.0f, -0.6f));
+
+    glm::vec3 lightPositions[] = {
+        glm::vec3(-3.0f,0.0f,0.0f),
+        glm::vec3(-1.0f, 0.0f, 0.0f),
+        glm::vec3(1.0f, 0.0f, 0.0f),
+        glm::vec3(3.0f, 0.0f, 0.0f)
+    };
+    glm::vec3 lightColors[] = {
+        glm::vec3(0.25),
+        glm::vec3(0.50),
+        glm::vec3(0.75),
+        glm::vec3(1.00)
+    };
 
 
 
@@ -331,7 +346,7 @@ int main()
     unsigned int cubeTexture = loadTexture("../textures/container.jpg");
     unsigned int grassTexture = loadTexture("../textures/grass.png");
     unsigned int transparentWindowTexture = loadTexture("../textures/blending_transparent_window.png");
-    unsigned int floorTexture = loadTexture("../textures/floor.png");
+    unsigned int floorTexture = loadTexture("../textures/floor.png",true);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
@@ -345,8 +360,7 @@ int main()
     ImVec4 borderColor = ImVec4(225.0f / 255.0f, 107.0f / 255.0f, 140.0f / 255.0f, 1.0f);
     float borderScale = 1.1f;
 
-    glm::vec3 lightPos(3, 3, 3);
-    bool blinn;
+    bool gammaCorrect = false;
 
 
     // render loop
@@ -368,8 +382,7 @@ int main()
         {
             ImGui::Begin("Setting");
             ImGui::Text("Press [m] show mouse [h] hide mouse");
-            ImGui::SliderFloat3("lightPos", (float*)&lightPos, -10, 10);
-            ImGui::Checkbox("blinn", &blinn);
+            ImGui::Checkbox("gammaCorrect", &gammaCorrect);
             ImGui::Text("Hello World!");
 
             ImGui::End();
@@ -385,6 +398,8 @@ int main()
         // render
         // ------
 
+
+
         // first pass
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
@@ -399,17 +414,17 @@ int main()
         glm::mat4 model = glm::mat4(1.0f);
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        
-        
+
+
         shader.use();
         model = glm::mat4(1.0f);
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
         shader.setMat4("model", model);
         shader.setInt("floorTexture", 0);
-        shader.setVec3("lightPos", lightPos);
         shader.setVec3("viewPos", camera.Position);
-        shader.setBool("blinn", blinn);
+        glUniform3fv(glGetUniformLocation(shader.ID, "lightPositions"), 4, &lightPositions[0][0]);
+        glUniform3fv(glGetUniformLocation(shader.ID, "lightColors"), 4, &lightColors[0][0]);
 
 
 
@@ -424,6 +439,7 @@ int main()
         glBindVertexArray(planeVAO);
         glBindTexture(GL_TEXTURE_2D, floorTexture);
         shader.setMat4("model", glm::mat4(1.0f));
+        shader.setBool("gammaCorrection", gammaCorrect);
         shader.use();
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
@@ -439,11 +455,15 @@ int main()
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        screenShader.use();
+
+        screenGammaCorrectionShader.use();
+        //screenGammaCorrectionShader.setBool("gammaCorrection", gammaCorrect);
+        //screenShader.use();
         glBindVertexArray(quadVAO);
         glDisable(GL_DEPTH_TEST);
         glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
         glDrawArrays(GL_TRIANGLES, 0, 6);
+
         // ImGui render end
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -552,7 +572,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 // utility function for loading a 2D texture from file
 // ---------------------------------------------------
-unsigned int loadTexture(char const* path)
+unsigned int loadTexture(char const* path, bool gammaCorrection)
 {
     unsigned int textureID;
     glGenTextures(1, &textureID);
@@ -562,15 +582,37 @@ unsigned int loadTexture(char const* path)
     if (data)
     {
         GLenum format;
+        GLenum gammaFormat;
         if (nrComponents == 1)
+        {
             format = GL_RED;
+            gammaFormat = format;
+        }
         else if (nrComponents == 3)
+        {
             format = GL_RGB;
+            if (gammaCorrection)
+            {
+                gammaFormat = GL_SRGB;
+            }
+        }
+
         else if (nrComponents == 4)
+        {
             format = GL_RGBA;
+            if (gammaCorrection)
+            {
+                gammaFormat = GL_SRGB_ALPHA;
+            }
+        }
+        if (gammaCorrection == false)
+        {
+            gammaFormat = format;
+        }
+
 
         glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, gammaFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
