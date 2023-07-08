@@ -12,3 +12,6 @@ CG is cool!
 
 ### 5.3.1 Shadow Mapping
 ![shadowmapping](screenshot/shadowmapping.png)
+
+### 5.3.2 Point Shadows
+![PointShadows](screenshot/pointShadow.png)

@@ -69,6 +69,7 @@ unsigned int transparentWindowTexture;
 unsigned int floorTexture;
 
 unsigned int depthMap;
+unsigned int depthCubemap;
 
 // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -171,47 +172,79 @@ float quadVertices1[] = {
 //};
 
 
-void RenderScene(Shader&shader)
+void RenderScene(Shader& shader)
 {
+    shader.use();
+    shader.setBool("gammaCorrection", gammaCorrect);
+    shader.setMat4("view", view);
+    shader.setMat4("projection", projection);
     // floor
-    glBindVertexArray(planeVAO);
+    //glActiveTexture(GL_TEXTURE0);
+    //glBindTexture(GL_TEXTURE_2D, floorTexture);
+    //glActiveTexture(GL_TEXTURE1);
+    //glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
+    //glBindVertexArray(planeVAO);
+
+    //shader.setMat4("model", glm::mat4(1.0f));
+
+    //shader.use();
+    //glDrawArrays(GL_TRIANGLES, 0, 6);
+    //glBindVertexArray(0);
+
+
+
+
+    // room cube
+
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, floorTexture);
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, depthMap);
-    shader.setMat4("model", glm::mat4(1.0f));
-    shader.setBool("gammaCorrection", gammaCorrect);
-    shader.use();
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
+    glBindVertexArray(cubeVAO);
 
-    shader.use();
-    shader.setMat4("view", view);
-    shader.setMat4("projection", projection);
+
+    model = glm::mat4(1.0f);
+    model = glm::scale(model, glm::vec3(5.0f));
+    shader.setMat4("model", model);
+    glDisable(GL_CULL_FACE);
+    shader.setInt("reverse_normals", 1);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    shader.setInt("reverse_normals", 0);
+    glEnable(GL_CULL_FACE);
 
     // DrawTwoContainers();
     // cubes
-    glBindVertexArray(cubeVAO);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, cubeTexture);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, depthMap);
+ 
     model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, 1.5f, 0.0f));
+    model = glm::translate(model, glm::vec3(4.0f, -3.5f, 0.0));
     model = glm::scale(model, glm::vec3(0.5));
     shader.setMat4("model", model);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
     model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(2.0f, 0.0f, 1.0));
+    model = glm::translate(model, glm::vec3(2.0f, 3.0f, 1.0));
+    model = glm::scale(model, glm::vec3(0.75));
+    shader.setMat4("model", model);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 0.0));
     model = glm::scale(model, glm::vec3(0.5));
     shader.setMat4("model", model);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
     model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(-1.0f, 0.0f, 2.0f));
+    model = glm::translate(model, glm::vec3(-1.5f, 1.0f, 1.5));
+    model = glm::scale(model, glm::vec3(0.5));
+    shader.setMat4("model", model);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(-1.5f, 2.0f, -3.0));
     model = glm::rotate(model, glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
-    model = glm::scale(model, glm::vec3(0.25));
+    model = glm::scale(model, glm::vec3(0.75f));
     shader.setMat4("model", model);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -281,15 +314,14 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader normalShader("../shaders/4_3_1.vs", "../shaders/4_3_1.fs");
-    Shader singleColorShader("../shaders/4_2_1.vs", "../shaders/4_2_2_shaderSingleColor.fs");
-    Shader transparentShader("../shaders/4_3_1.vs", "../shaders/4_3_2_transparent.fs");
-    Shader screenShader("../shaders/5_1_post.vs", "../shaders/5_1_post.fs");
-    Shader shader("../shaders/5_3_Blinn-PhongWithGamma.vs", "../shaders/5_3_Blinn-PhongWithGamma.fs");
+
+    Shader shader("../shaders/5_3_2_Blinn-PhongWithGamma.vs", "../shaders/5_3_2_Blinn-PhongWithGamma.fs");
     Shader screenGammaCorrectionShader("../shaders/5_2_postGammaCorrection.vs", "../shaders/5_2_postGammaCorrection.fs");
     Shader simpleDepthShader("../shaders/5_3_simpleDepth.vs", "../shaders/5_3_simpleDepth.fs");
     Shader showDepthMapShader("../shaders/5_3_showDepthMap.vs", "../shaders/5_3_showDepthMap.fs");
-    
+
+    Shader depthCubemapShader("../shaders/5_3_2_depthCubemap.vs", "../shaders/5_3_2_depthCubemap.fs", "../shaders/5_3_2_depthCubemap.gs");
+
 
     glGenVertexArrays(1, &cubeVAO);
     glGenBuffers(1, &cubeVBO);
@@ -411,7 +443,7 @@ int main()
 
     // load textures
     // -------------
-    cubeTexture = loadTexture("../textures/container.jpg",true);
+    cubeTexture = loadTexture("../textures/container.jpg", true);
     grassTexture = loadTexture("../textures/grass.png");
     transparentWindowTexture = loadTexture("../textures/blending_transparent_window.png");
     floorTexture = loadTexture("../textures/floor.png", true);
@@ -438,22 +470,44 @@ int main()
     float borderColor[] = { 1.0f,1.0f,1.0f,1.0f };
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
+    //glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+    //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+    //glDrawBuffer(GL_NONE);
+    //glDrawBuffer(GL_NONE);
+    //glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    glGenTextures(1, &depthCubemap);
+    
+    glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
+    for (unsigned int i = 0; i < 6; i++)
+    {
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT,
+            SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    }
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
     glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthCubemap, 0);
     glDrawBuffer(GL_NONE);
-    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
 
-    glm::vec3 lightPos = glm::vec3(-2.0f, 4.0f, -1.0f);
+
+
+    glm::vec3 lightPos = glm::vec3(0);
 
     lightPositions.clear();
     lightPositions.push_back(lightPos);
     lightColors.clear();
-    lightColors.push_back(glm::vec3(10.0));
+    lightColors.push_back(glm::vec3(10));
 
-  
+
 
 
 
@@ -496,23 +550,47 @@ int main()
 
         // shadow map pass
 
-        float near_plane = 1.0f, far_plane = 7.5f;
-        glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+        float aspect = (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT;
+        float near = 1.0f;
+        float far = 25.0f;
 
-        glm::mat4 lightView = glm::lookAt(lightPos,
-            glm::vec3(0.0f, 0.0f, 0.0f),
-            glm::vec3(0.0f, 1.0f, 0.0f));
+        glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, far);
 
-        glm::mat4 lightSpaceMatrix = lightProjection * lightView;
-        simpleDepthShader.use();
-        simpleDepthShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
+        std::vector<glm::mat4> shadowTransforms;
+        // right
+        shadowTransforms.push_back(shadowProj *
+            glm::lookAt(lightPos, lightPos + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+        // left
+        shadowTransforms.push_back(shadowProj *
+            glm::lookAt(lightPos, lightPos + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+        // top
+        shadowTransforms.push_back(shadowProj *
+            glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
+        // bottom
+        shadowTransforms.push_back(shadowProj *
+            glm::lookAt(lightPos, lightPos + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
+        // near
+        shadowTransforms.push_back(shadowProj *
+            glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
+        // far
+        shadowTransforms.push_back(shadowProj *
+            glm::lookAt(lightPos, lightPos + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
+
+        depthCubemapShader.use();
+
+        depthCubemapShader.setFloat("far_plane", far);
+        depthCubemapShader.setVec3("lightPos",lightPos);
+        glUniformMatrix4fv(glGetUniformLocation(depthCubemapShader.ID, "shadowMatrices"), shadowTransforms.size(),GL_FALSE, &shadowTransforms[0][0][0]);
 
         glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-            glClear(GL_DEPTH_BUFFER_BIT);
-            glCullFace(GL_FRONT);
-            RenderScene(simpleDepthShader);
-            glCullFace(GL_BACK);
+        glClear(GL_DEPTH_BUFFER_BIT);
+        glCullFace(GL_FRONT);
+
+        glActiveTexture(GL_TEXTURE0);
+
+        RenderScene(depthCubemapShader);
+        glCullFace(GL_BACK);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
@@ -531,7 +609,7 @@ int main()
 
         // color pass
         //glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-        glBindFramebuffer(GL_FRAMEBUFFER, textureColorbuffer); // back to default
+        glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
 
 
 
@@ -551,9 +629,9 @@ int main()
         shader.setMat4("projection", projection);
         shader.setMat4("model", model);
         shader.setInt("diffuseTexture", 0);
-        shader.setInt("shadowMap", 1);
+        shader.setInt("depthCubemap", 1);
         shader.setVec3("viewPos", camera.Position);
-        shader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
+        shader.setFloat("far_plane", far);
         glUniform3fv(glGetUniformLocation(shader.ID, "lightPositions"), lightPositions.size(), &lightPositions[0][0]);
         glUniform3fv(glGetUniformLocation(shader.ID, "lightColors"), lightColors.size(), &lightColors[0][0]);
 
@@ -564,25 +642,23 @@ int main()
 
         RenderScene(shader);
 
-      
-
-        // post pass
-        // 
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
 
 
-        screenGammaCorrectionShader.use();
-        shader.setInt("screenTexture", 0);
-        //screenGammaCorrectionShader.setBool("gammaCorrection", gammaCorrect);
-        //screenShader.use();
-        glBindVertexArray(quadVAO);
-        glDisable(GL_DEPTH_TEST);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        //// post pass
+        //// 
+        ////glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        //glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
+        //glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        //glClear(GL_COLOR_BUFFER_BIT);
+
+
+        //screenGammaCorrectionShader.use();
+        ////screenGammaCorrectionShader.setBool("gammaCorrection", gammaCorrect);
+        ////screenShader.use();
+        //glBindVertexArray(quadVAO);
+        //glDisable(GL_DEPTH_TEST);
+        //glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+        //glDrawArrays(GL_TRIANGLES, 0, 6);
 
         // ImGui render end
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -632,7 +708,7 @@ void processInput(GLFWwindow* window)
         glfwSetCursorPosCallback(window, mouse_callback);
         glfwSetScrollCallback(window, scroll_callback);
     }
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS&&!gammaKeyPressed) {
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !gammaKeyPressed) {
         gammaCorrect = !gammaCorrect;
         gammaKeyPressed = true;
     }

@@ -21,10 +21,9 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{26b8a0d7-9859-4cf2-80ff-5ddb692fc781}</ProjectGuid>
-    <RootNamespace>My53ShadowMapping</RootNamespace>
+    <ProjectGuid>{833442d2-74e2-49ea-833f-f49eab6ec716}</ProjectGuid>
+    <RootNamespace>My532PointShadows</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>5_3_1_ShadowMapping</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
