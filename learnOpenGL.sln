@@ -73,6 +73,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "5_3_2_PointShadows", "5_3_2
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "5_4_NormalMapping", "5_4_NormalMapping\5_4_NormalMapping.vcxproj", "{A7E7614D-03B5-4463-B52E-EF1D85A536DF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "5_5_ParallaxMapping", "5_5_ParallaxMapping\5_5_ParallaxMapping.vcxproj", "{FF0A724A-260D-4EA4-8268-538D72164EB7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -321,6 +323,14 @@ Global
 		{A7E7614D-03B5-4463-B52E-EF1D85A536DF}.Release|x64.Build.0 = Release|x64
 		{A7E7614D-03B5-4463-B52E-EF1D85A536DF}.Release|x86.ActiveCfg = Release|Win32
 		{A7E7614D-03B5-4463-B52E-EF1D85A536DF}.Release|x86.Build.0 = Release|Win32
+		{FF0A724A-260D-4EA4-8268-538D72164EB7}.Debug|x64.ActiveCfg = Debug|x64
+		{FF0A724A-260D-4EA4-8268-538D72164EB7}.Debug|x64.Build.0 = Debug|x64
+		{FF0A724A-260D-4EA4-8268-538D72164EB7}.Debug|x86.ActiveCfg = Debug|Win32
+		{FF0A724A-260D-4EA4-8268-538D72164EB7}.Debug|x86.Build.0 = Debug|Win32
+		{FF0A724A-260D-4EA4-8268-538D72164EB7}.Release|x64.ActiveCfg = Release|x64
+		{FF0A724A-260D-4EA4-8268-538D72164EB7}.Release|x64.Build.0 = Release|x64
+		{FF0A724A-260D-4EA4-8268-538D72164EB7}.Release|x86.ActiveCfg = Release|Win32
+		{FF0A724A-260D-4EA4-8268-538D72164EB7}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -356,6 +366,7 @@ Global
 		{26B8A0D7-9859-4CF2-80FF-5DDB692FC781} = {5CA8A719-B407-44E8-804B-29A46B9C373E}
 		{833442D2-74E2-49EA-833F-F49EAB6EC716} = {5CA8A719-B407-44E8-804B-29A46B9C373E}
 		{A7E7614D-03B5-4463-B52E-EF1D85A536DF} = {5CA8A719-B407-44E8-804B-29A46B9C373E}
+		{FF0A724A-260D-4EA4-8268-538D72164EB7} = {5CA8A719-B407-44E8-804B-29A46B9C373E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C92C70E6-92A8-4800-963F-0F71BA4FE778}

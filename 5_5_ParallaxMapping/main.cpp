@@ -47,6 +47,9 @@ bool gammaCorrect = true;
 bool gammaKeyPressed = false;
 bool enableNormalMapping = true;
 bool enableNormalMappingPressed = false;
+bool enableParallaxMapping = true;
+bool enableParallaxMappingPressed = false;
+float ParallaxHScale = 0.2;
 
 glm::mat4 model;
 glm::mat4 view;
@@ -61,12 +64,21 @@ unsigned int planeVAO, planeVBO;
 //transparent VAO
 unsigned int transparentVAO, transparentVBO;
 
+
+
+
 unsigned int cubeTexture;
 unsigned int grassTexture;
 unsigned int transparentWindowTexture;
 unsigned int floorTexture;
 unsigned int brickwallTexture;
-unsigned int brickwallNoramlTexture;
+unsigned int brickwallNormalTexture;
+unsigned int brickwallDepthTexture;
+
+unsigned int woodTexture;
+unsigned int toyboxNormalTexture;
+unsigned int toyboxDepthTexture;
+
 
 unsigned int depthMap;
 unsigned int depthCubemap;
@@ -131,7 +143,7 @@ float planeVertices[] = {
 
 void renderQuad();
 
-void RenderScene(Shader& shader,Model& m)
+void RenderScene(Shader& shader)
 {
     shader.use();
     shader.setBool("gammaCorrection", gammaCorrect);
@@ -141,10 +153,12 @@ void RenderScene(Shader& shader,Model& m)
     // floor
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, brickwallTexture);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, brickwallNoramlTexture);
+    glBindTexture(GL_TEXTURE_2D, woodTexture);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, toyboxNormalTexture);
     glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, toyboxDepthTexture);
+    glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
 
     glm::mat4 model = glm::mat4(1.0f);
@@ -155,16 +169,13 @@ void RenderScene(Shader& shader,Model& m)
     shader.setMat4("model", model);
 
     shader.use();
-    //renderQuad();
-    //glDrawArrays(GL_TRIANGLES, 0, 6);
-    //glBindVertexArray(0);
+
 
     model = glm::mat4(1.0f);
     shader.setMat4("model", model);
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
-    m.Draw(shader);
-
+    renderQuad();
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
 }
 
 int main()
@@ -232,7 +243,7 @@ int main()
     // build and compile shaders
     // -------------------------
 
-    Shader shader("../shaders/5_4_Blinn-PhongWithNormalMapping.vs", "../shaders/5_4_Blinn-PhongWithNormalMapping.fs");
+    Shader shader("../shaders/5_5_Blinn-PhongWithParallaxMapping.vs", "../shaders/5_5_Blinn-PhongWithParallaxMapping.fs");
     Shader screenGammaCorrectionShader("../shaders/5_2_postGammaCorrection.vs", "../shaders/5_2_postGammaCorrection.fs");
     Shader simpleDepthShader("../shaders/5_3_simpleDepth.vs", "../shaders/5_3_simpleDepth.fs");
     Shader showDepthMapShader("../shaders/5_3_showDepthMap.vs", "../shaders/5_3_showDepthMap.fs");
@@ -341,11 +352,16 @@ int main()
     grassTexture = loadTexture("../textures/grass.png");
     transparentWindowTexture = loadTexture("../textures/blending_transparent_window.png");
     floorTexture = loadTexture("../textures/floor.png", true);
-    brickwallTexture = loadTexture("../textures/brickwall.jpg");
-    brickwallNoramlTexture = loadTexture("../textures/brickwall_normal.jpg");
+    brickwallTexture = loadTexture("../textures/bricks2.jpg");
+    brickwallNormalTexture = loadTexture("../textures/bricks2_normal.jpg");
+    brickwallDepthTexture = loadTexture("../textures/bricks2_disp.jpg");
+
+    woodTexture = loadTexture("../textures/wood.png",true);
+    toyboxNormalTexture = loadTexture("../textures/toy_box_normal.png");
+    toyboxDepthTexture = loadTexture("../textures/toy_box_disp.png");
 
     //¶ÁÈ¡Ä£ÐÍ
-    Model backpackModel("C://Users/yufei/3dModel/backpack/backpack.obj");
+    //Model backpackModel("C://Users/yufei/3dModel/backpack/backpack.obj");
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
@@ -429,8 +445,10 @@ int main()
         {
             ImGui::Begin("Setting");
             ImGui::Text("Press [m] show mouse [h] hide mouse");
-            ImGui::Checkbox("gammaCorrect", &gammaCorrect); 
+            ImGui::Checkbox("gammaCorrect", &gammaCorrect);
             ImGui::Checkbox("enableNormalMapping", &enableNormalMapping);
+            ImGui::Checkbox("enableParallaxMapping", &enableParallaxMapping);
+            ImGui::SliderFloat("ParallaxHScale", &ParallaxHScale, 0, 1);
             ImGui::Text("Hello World!");
 
             ImGui::End();
@@ -489,7 +507,7 @@ int main()
 
         glActiveTexture(GL_TEXTURE0);
 
-        RenderScene(depthCubemapShader,backpackModel);
+        RenderScene(depthCubemapShader);
         glCullFace(GL_BACK);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -531,9 +549,12 @@ int main()
         shader.setInt("texture_diffuse", 0);
         shader.setInt("texture_specular", 1);
         shader.setInt("texture_normal", 2);
-        shader.setInt("depthCubemap", 3);
+        shader.setInt("texture_depth", 3);
+        shader.setInt("depthCubemap", 4);
         shader.setVec3("viewPos", camera.Position);
         shader.setFloat("far_plane", far);
+        shader.setFloat("height_scale", ParallaxHScale);
+        shader.setBool("enableParallaxMapping", enableParallaxMapping);
         glUniform3fv(glGetUniformLocation(shader.ID, "lightPositions"), lightPositions.size(), &lightPositions[0][0]);
         glUniform3fv(glGetUniformLocation(shader.ID, "lightColors"), lightColors.size(), &lightColors[0][0]);
 
@@ -542,7 +563,7 @@ int main()
         glStencilMask(0x00);
 
 
-        RenderScene(shader, backpackModel);
+        RenderScene(shader);
 
 
 
@@ -588,8 +609,8 @@ int main()
 
 
 // renders a 1x1 quad in NDC with manually calculated tangent vectors
-unsigned int quadVAO=0, quadVBO;
- 
+unsigned int quadVAO = 0, quadVBO;
+
 void renderQuad()
 {
     if (quadVAO == 0)
@@ -666,7 +687,7 @@ void renderQuad()
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(3*sizeof(float)));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(3 * sizeof(float)));
         glEnableVertexAttribArray(2);
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(6 * sizeof(float)));
         glEnableVertexAttribArray(3);
@@ -719,6 +740,13 @@ void processInput(GLFWwindow* window)
     }
     if (glfwGetKey(window, GLFW_KEY_N) == GLFW_RELEASE) {
         enableNormalMappingPressed = false;
+    }
+    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && !enableParallaxMappingPressed) {
+        enableParallaxMapping = !enableParallaxMapping;
+        enableParallaxMappingPressed = true;
+    }
+    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_RELEASE) {
+        enableParallaxMappingPressed = false;
     }
 }
 

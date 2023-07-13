@@ -154,7 +154,7 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType 
 		{
 			// if texture hasn't been loaded already, load it
 			Texture texture;
-			texture.id = TextureFromFile(str.C_Str(), directory);
+			texture.id = TextureFromFile(str.C_Str(), directory,true);
 			texture.type = typeName;
 			texture.path = std::string(str.C_Str());
 			textures.push_back(texture);
@@ -194,8 +194,19 @@ unsigned int TextureFromFile(const char* filepath,const std::string &directory,b
 		{
 			format = GL_RGBA;
 		}
+		GLenum gammaFormat= format;
+		if (gamma)
+		{
+			if (format == GL_RGB) {
+				gammaFormat = GL_SRGB;
+			}
+			else if (format == GL_RGBA) {
+				gammaFormat = GL_SRGB_ALPHA;
+			}
+		}
+		
 		glBindTexture(GL_TEXTURE_2D, texture);
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, gammaFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
