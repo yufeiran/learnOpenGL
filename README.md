@@ -20,5 +20,5 @@ CG is cool!
 
 NormalMappingOn | NormalMappingOff
 --|--
-![NormalMappingOn](screenshot/NormalMappingON.png)|![NormalMappingOff](screenshot/NormalMappingOFF.png)
-![NormalMappingOn1](screenshot/NormalMappingON1.png)|![NormalMappingOff1](screenshot/NormalMappingOFF1.png)
+![NormalMappingOn](screenshot/NormalMappingOn.png)|![NormalMappingOff](screenshot/NormalMappingOFF.png)
+![NormalMappingOn1](screenshot/NormalMappingOn1.png)|![NormalMappingOff1](screenshot/NormalMappingOFF1.png)
