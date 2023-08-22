@@ -14,7 +14,7 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="imgui">
-      <UniqueIdentifier>{4a01922a-8ff8-42de-9d4b-68ba29b3b317}</UniqueIdentifier>
+      <UniqueIdentifier>{7ab038d0-9f9b-4eee-968e-846aee16daff}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -39,10 +39,10 @@
     <ClCompile Include="..\unitlty\imgui\imgui_widgets.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="..\unitlty\glad.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\unitlty\glad.c">
+    <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
