@@ -2,20 +2,32 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-#include"../unitlty/shader.h"
-#include"../unitlty/mesh.h"
-#include<assimp/Importer.hpp>
-#include<assimp/scene.h>
-#include<assimp/postprocess.h>
-
 #include<vector>
 #include<string>
 #include<iostream>
+#include<map>
+
+#include"../unitlty/shader.h"
+#include"../unitlty/mesh.h"
+#include"../unitlty/AssimpGLMHelpers.h"
+#include<assimp/Importer.hpp>
+#include<assimp/scene.h>
+#include<assimp/postprocess.h>
+#include<glm/glm.hpp>
 
 
 
 
-unsigned int TextureFromFile(const char* filepath, const std::string& directory, bool gamma=false);
+struct BoneInfo
+{
+	// id is index in finalBoneMatrices
+	int id;
+
+	// offset matrix transforms vertex from model space to bone space
+	glm::mat4 offset;
+};
+
+unsigned int TextureFromFile(const char* filepath, const std::string& directory, bool gamma = false);
 class Model
 {
 public:
@@ -28,11 +40,24 @@ public:
 	std::vector<Mesh> meshes;
 
 	std::vector<Texture> textures_loaded;
+
+	auto& GetBoneInfoMap() { return m_BoneInfoMap; }
+	int& GetBoneCount() { return m_BoneCounter; }
 private:
+
+	std::map<std::string, BoneInfo> m_BoneInfoMap;
+	int m_BoneCounter = 0;
+
+
+
+
+
 
 	std::string directory;
 
-
+	void SetVertexBoneDataToDefault(Vertex& vertex);
+	void SetVertexBoneData(Vertex& vertex, int boneID, float weight);
+	void ExtractBoneWeightForVertices(std::vector<Vertex>& vertices, aiMesh* mesh, const aiScene* scene);
 
 	void loadModel(std::string path);
 	void processNode(aiNode* node, const aiScene* scene);
@@ -50,7 +75,7 @@ void Model::Draw(Shader& shader)
 void Model::loadModel(std::string path)
 {
 	Assimp::Importer import;
-	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+	const aiScene * scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -77,6 +102,64 @@ void Model::processNode(aiNode* node, const aiScene* scene)
 	}
 }
 
+void Model::SetVertexBoneDataToDefault(Vertex& vertex)
+{
+	for (int i = 0; i < MAX_BONE_INFLUENCE; i++)
+	{
+		vertex.m_BoneIDs[i] = -1;
+		vertex.m_Weights[i] = 0.0f;
+	}
+}
+
+void Model::SetVertexBoneData(Vertex& vertex, int boneID, float weight)
+{
+	for (int i = 0; i < MAX_BONE_INFLUENCE; ++i)
+	{
+		if (vertex.m_BoneIDs[i] < 0)
+		{
+			vertex.m_Weights[i] = weight;
+			vertex.m_BoneIDs[i] = boneID;
+			break;
+		}
+	}
+
+}
+
+void Model::ExtractBoneWeightForVertices(std::vector<Vertex>& vertices, aiMesh* mesh, const aiScene* scene)
+{
+	for (int boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex)
+	{
+		int boneID = -1;
+		std::string boneName = mesh->mBones[boneIndex]->mName.C_Str();
+		if (m_BoneInfoMap.find(boneName) == m_BoneInfoMap.end())
+		{
+			BoneInfo newBoneInfo;
+			newBoneInfo.id = m_BoneCounter;
+			newBoneInfo.offset = AssimpGLMHelpers::ConvertMatrixToGLMFormat(
+				mesh->mBones[boneIndex]->mOffsetMatrix);
+			m_BoneInfoMap[boneName] = newBoneInfo;
+			boneID = m_BoneCounter;
+			m_BoneCounter++;
+		}
+		else
+		{
+			boneID = m_BoneInfoMap[boneName].id;
+		}
+		assert(boneID != -1);
+		auto weights = mesh->mBones[boneIndex]->mWeights;
+		int numWeights = mesh->mBones[boneIndex]->mNumWeights;
+
+		for (int weightIndex = 0; weightIndex < numWeights; ++weightIndex)
+		{
+			int vertexId = weights[weightIndex].mVertexId;
+			float weight = weights[weightIndex].mWeight;
+			assert(vertexId <= vertices.size());
+			SetVertexBoneData(vertices[vertexId], boneID, weight);
+		}
+	}
+}
+
+
 Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 {
 	std::vector<Vertex> vertices;
@@ -86,18 +169,24 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 	{
 		Vertex vertex;
+
+		SetVertexBoneDataToDefault(vertex);
+
 		// process vertex positions,normals and texture coordinates
-		vertex.Position = glm::vec3( mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+		vertex.Position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
 		vertex.Normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+
 		if (mesh->mTextureCoords[0])
 		{
-			glm::vec2 vec;  
+			glm::vec2 vec;
 			vec.x = mesh->mTextureCoords[0][i].x;
 			vec.y = mesh->mTextureCoords[0][i].y;
 			vertex.TexCoords = vec;
 		}
 		else
 			vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+
+
 		glm::vec3 vector;
 		vector.x = mesh->mTangents[i].x;
 		vector.y = mesh->mTangents[i].y;
@@ -129,6 +218,8 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 	}
 
+	ExtractBoneWeightForVertices(vertices, mesh, scene);
+
 	return Mesh(vertices, indices, textures);
 
 }
@@ -154,7 +245,7 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType 
 		{
 			// if texture hasn't been loaded already, load it
 			Texture texture;
-			texture.id = TextureFromFile(str.C_Str(), directory,true);
+			texture.id = TextureFromFile(str.C_Str(), directory, true);
 			texture.type = typeName;
 			texture.path = std::string(str.C_Str());
 			textures.push_back(texture);
@@ -167,7 +258,7 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType 
 
 
 
-unsigned int TextureFromFile(const char* filepath,const std::string &directory,bool gamma)
+unsigned int TextureFromFile(const char* filepath, const std::string& directory, bool gamma)
 {
 
 	std::string filename = std::string(filepath);
@@ -194,7 +285,7 @@ unsigned int TextureFromFile(const char* filepath,const std::string &directory,b
 		{
 			format = GL_RGBA;
 		}
-		GLenum gammaFormat= format;
+		GLenum gammaFormat = format;
 		if (gamma)
 		{
 			if (format == GL_RGB) {
@@ -204,7 +295,7 @@ unsigned int TextureFromFile(const char* filepath,const std::string &directory,b
 				gammaFormat = GL_SRGB_ALPHA;
 			}
 		}
-		
+
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glTexImage2D(GL_TEXTURE_2D, 0, gammaFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
@@ -222,7 +313,7 @@ unsigned int TextureFromFile(const char* filepath,const std::string &directory,b
 		stbi_image_free(data);
 	}
 	stbi_set_flip_vertically_on_load(false);
-	
+
 	return texture;
 }
 #endif // !MODEL_H

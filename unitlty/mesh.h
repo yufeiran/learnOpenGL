@@ -10,11 +10,19 @@
 #include<glm/gtc/type_ptr.hpp>
 #include"../unitlty/shader.h"
 
+#define MAX_BONE_INFLUENCE 4
+
 struct Vertex {
 	glm::vec3 Position;
 	glm::vec3 Normal;
 	glm::vec2 TexCoords;
 	glm::vec3 Tangent;
+	glm::vec3 Bitangent;
+
+	// bone indexes which will influence this vertex
+	int m_BoneIDs[MAX_BONE_INFLUENCE];
+	// weights from each bone
+	float m_Weights[MAX_BONE_INFLUENCE];
 };
 
 struct Texture {
@@ -69,7 +77,7 @@ void Mesh::setupMesh()
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER,indices.size()*sizeof(unsigned int),
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int),
 		&indices[0], GL_STATIC_DRAW);
 
 	// vertex positions
@@ -84,6 +92,19 @@ void Mesh::setupMesh()
 	// vertex tangents
 	glEnableVertexAttribArray(3);
 	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
+	// vertex bitangents
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
+
+	// Bone ids
+	glEnableVertexAttribArray(5);
+	glVertexAttribIPointer(5, 4, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, m_BoneIDs));
+
+	// Bone weights
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer(6,4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_Weights));
+
+
 
 	glBindVertexArray(0);
 
@@ -104,7 +125,7 @@ void Mesh::Draw(Shader& shader)
 			number = std::to_string(diffuseNr++);
 		else if (name == "texture_specular")
 			number = std::to_string(specularNr++);
-		else if(name=="texture_normal")
+		else if (name == "texture_normal")
 			number = std::to_string(normalNr++);
 
 		shader.setInt(("material." + name + number).c_str(), i);

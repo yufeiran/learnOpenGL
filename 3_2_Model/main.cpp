@@ -185,7 +185,7 @@ int main()
 
     
     //读取模型
-    Model backpackModel("C://Users/yufei/3dModel/backpack/backpack.obj");
+    Model backpackModel("D://yufeiran/model/backpack/backpack.obj");
 
     //被光照的物体
     Shader lightingShader("../shaders/3_2_Model_1.vs", "../shaders/3_2_Model_1.fs");

@@ -30,3 +30,6 @@ NormalMappingOn | NormalMappingOff
 SSAO | SSAO with Lighting
 --|--
 ![SSAO](screenshot/SSAO.png)|![SSAOWITHLIGHT](screenshot/SSAO_with_Color.gif)
+
+### Guest-Articles/2020/Skeletal-Animation
+![Skeletal-Animation](screenshot/Skeletal-Animation.gif)

@@ -345,7 +345,7 @@ int main()
     brickwallNoramlTexture = loadTexture("../textures/brickwall_normal.jpg");
 
     //¶ÁÈ¡Ä£ÐÍ
-    Model backpackModel("C://Users/yufei/3dModel/backpack/backpack.obj");
+    Model backpackModel("D://yufeiran/model/backpack/backpack.obj");
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
